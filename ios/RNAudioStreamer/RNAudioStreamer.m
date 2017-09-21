@@ -22,11 +22,13 @@ static NSString *ERROR = @"ERROR";
 @interface RNAudioStreamer ()
 @property(strong, nonatomic) STKAudioPlayer *player;
 @property(strong, nonatomic) NSURL *url;
+@property (class, assign) BOOL justInitialized;
 @end
 
 @implementation RNAudioStreamer
 
 static void *kStatusKVOKey = &kStatusKVOKey;
+static BOOL justInitialized = YES;
 
 @synthesize bridge = _bridge;
 
@@ -57,14 +59,31 @@ RCT_EXPORT_METHOD(setUrl:(NSString *)urlString){
               forKeyPath:@"state"
                  options:NSKeyValueObservingOptionNew
                  context:kStatusKVOKey];
+    justInitialized = YES;
 }
 
 RCT_EXPORT_METHOD(play) {
-    if(_player) [_player playURL:_url];
+    if(_player) {
+        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+                [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
+                      withOptions: (AVAudioSessionCategoryOptionAllowBluetoothA2DP |AVAudioSessionCategoryOptionDefaultToSpeaker)
+                            error:nil];
+
+        [_player playURL:_url];
+    }
 }
 
 RCT_EXPORT_METHOD(pause) {
-    if(_player) [_player pause];
+    if(_player) {
+        if (justInitialized) {
+            AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+            [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
+                          withOptions: (AVAudioSessionCategoryOptionAllowBluetoothA2DP |AVAudioSessionCategoryOptionDefaultToSpeaker)
+                                error:nil];
+            justInitialized = NO;
+        }
+       [_player pause];
+    }
 }
 
 RCT_EXPORT_METHOD(seekToTime: (double)time) {
