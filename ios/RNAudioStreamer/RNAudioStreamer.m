@@ -66,7 +66,7 @@ RCT_EXPORT_METHOD(play) {
     if(_player) {
         AVAudioSession *audioSession = [AVAudioSession sharedInstance];
                 [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
-                      withOptions: (AVAudioSessionCategoryOptionAllowBluetoothA2DP |AVAudioSessionCategoryOptionDefaultToSpeaker)
+                    withOptions: (AVAudioSessionCategoryOptionAllowBluetoothA2DP |AVAudioSessionCategoryOptionDefaultToSpeaker | AVAudioSessionCategoryOptionMixWithOthers)
                             error:nil];
 
         [_player playURL:_url];
@@ -78,7 +78,7 @@ RCT_EXPORT_METHOD(pause) {
         if (justInitialized) {
             AVAudioSession *audioSession = [AVAudioSession sharedInstance];
             [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
-                          withOptions: (AVAudioSessionCategoryOptionAllowBluetoothA2DP |AVAudioSessionCategoryOptionDefaultToSpeaker)
+                    withOptions: (AVAudioSessionCategoryOptionAllowBluetoothA2DP |AVAudioSessionCategoryOptionDefaultToSpeaker | AVAudioSessionCategoryOptionMixWithOthers)
                                 error:nil];
             justInitialized = NO;
         }
